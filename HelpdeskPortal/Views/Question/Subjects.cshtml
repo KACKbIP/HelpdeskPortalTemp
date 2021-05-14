@@ -1,0 +1,17 @@
+﻿@model List<HelpdeskPortal.Models.Question.SubjectModel>
+@{
+    Layout = null;
+}
+<label for="subjectList">Вопрос</label>
+<select onclick="FindAnswer()" id="subjectList" class="form-control">
+    <option value="0"></option>
+    @if (Model != null)
+    {
+        @foreach (var item in Model)
+        {
+            <option value="@item.Id">@item.Question</option>
+        }
+    }
+
+    <option value="-1">Другой вопрос</option>
+</select>

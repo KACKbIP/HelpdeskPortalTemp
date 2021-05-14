@@ -1,0 +1,208 @@
+﻿@model List<HelpdeskPortal.Models.Admin.SubjectModel>
+@{
+    ViewData["Title"] = "Вопросы по " + ViewBag.ViewRequest;
+}
+@section scripts
+{
+    <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+    <script src="~/scripts/sweetalert2.all.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function DeleteSubject(id) {
+            $.ajax({
+                    type: "POST",
+                    url: "/Admin/DeleteSubject",
+                    data: {
+                        id: id
+                    },
+
+                    success: function (data) {
+
+                        if (data == 'true') {
+                            Swal.fire({
+                                title: 'Вопросы',
+                                text: 'удалено',
+                                icon: 'success',
+                                confirmButtonText: 'Отлично'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            })
+                        }
+                        else {
+                             Swal.fire({
+                                 title: 'Вопросы',
+                                text: data,
+                                icon: 'error',
+                                confirmButtonText: 'Попробовать снова'
+                            })
+                        }
+                    }
+                })
+        }
+        function ChangeSubject(id) {
+            var ss = 'question(' + id + ')';
+            var sss = 'answer(' + id + ')';
+            let question = document.getElementById(ss).value;
+            let answer = document.getElementById(sss).value;
+            if (question == '') {
+                Swal.fire({
+                    title: 'Вопросы',
+                    text: 'заполните вопрос',
+                    icon: 'error',
+                    confirmButtonText: 'Заполнить'
+                })
+            } else if (answer == '') {
+                Swal.fire({
+                    title: 'Вопросы',
+                    text: 'заполните ответ',
+                    icon: 'error',
+                    confirmButtonText: 'Заполнить'
+                })
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/ChangeSubject",
+                    data: {
+                        id: id,
+                        question: question,
+                        answer: answer
+                    },
+
+                    success: function (data) {
+
+                        if (data == 'true') {
+                            Swal.fire({
+                                title: 'Вопросы',
+                                text: 'изменено',
+                                icon: 'success',
+                                confirmButtonText: 'Отлично'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            })
+                        }
+                        else {
+                            Swal.fire({
+                                title: 'Вопросы',
+                                text: data,
+                                icon: 'error',
+                                confirmButtonText: 'Попробовать снова'
+                            })
+                        }
+                    }
+                })
+            }
+        }
+        function SaveSubject() {
+            let question = $('#question').val();
+            let answer = $('#answer').val();
+            if (question == '') {
+                Swal.fire({
+                    title: 'Вопросы',
+                    text: 'заполните вопрос',
+                    icon: 'error',
+                    confirmButtonText: 'Заполнить'
+                })
+            } else if (answer == '') {
+                Swal.fire({
+                    title: 'Вопросы',
+                    text: 'заполните ответ',
+                    icon: 'error',
+                    confirmButtonText: 'Заполнить'
+                })
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/SaveSubject",
+                    data: {
+                        viewRequestId: @ViewBag.ViewRequestId,
+                        question: question,
+                        answer: answer
+                    },
+
+                    success: function (data) {
+
+                        if (data == 'true') {
+                            Swal.fire({
+                                title: 'Вопросы',
+                                text: 'сохранено',
+                                icon: 'success',
+                                confirmButtonText: 'Отлично'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            })
+                        }
+                        else {
+                            Swal.fire({
+                                title: 'Вопросы',
+                                text: data,
+                                icon: 'error',
+                                confirmButtonText: 'Попробовать снова'
+                            })
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-question "></i> @ViewData["Title"]</h1>
+    </div>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Вопрос</th>
+                            <th>Ответ</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><input class="col-12" type="text" id="question(@item.Id)" value="@item.Question" /> </td>
+                                <td><input class="col-12" type="text" id="answer(@item.Id)" value="@item.Answer" /> </td>
+                                
+                                <td>
+                                    <a href="#"  onclick="ChangeSubject(@item.Id)" class="btn btn-warning btn-circle btn-sm">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </a>
+                                    <a href="#"  onclick="DeleteSubject(@item.Id)" class="btn btn-danger btn-circle btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td><input type="text" class="col-12" placeholder="Введите вопрос" id="question" /></td>
+                            <td><input type="text" class="col-12" placeholder="Введите ответ" id="answer" /></td>
+                            <td>
+                                <a href="#"  onclick="SaveSubject()" class="btn btn-success btn-circle btn-sm">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+</div>

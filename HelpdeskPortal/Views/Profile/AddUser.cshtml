@@ -1,0 +1,146 @@
+﻿
+@{
+    ViewData["Title"] = "Регистрация нового пользователя";
+}
+@section scripts
+{
+    <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+    <script src="~/scripts/sweetalert2.all.min.js" type="text/javascript"></script>
+    <script src="~/scripts/jquery.mask.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#Phone").mask("+7 799 999 99 99");
+            $('#positions').load("/Profile/Positions");
+            $("#errPhone").hide();
+            $("#errFirstName").hide();
+            $("#errName").hide();
+            $("#errPassword").hide();
+            $("#errLogin").hide();
+            
+        });
+        function UpdateProfile() {
+
+            let phone = $('#Phone').val();
+            let firstName = $('#FirstName').val();
+            let lastName = $('#LastName').val();;
+            let email = $('#Email').val();
+            let login = $('#Login').val();
+            let password = $('#Password').val();
+            let positionId = $('#positionList').val();
+
+            if (phone == '') {
+                $("#errPhone").show();
+            } else if (firstName == '') {
+                $("#errFirstName").show();
+            } else if (login == '') {
+                $("#errLogin").show();
+            } else if (lastName == '') {
+                $("#errName").show();
+            } else if (password == '') {
+                $("#errPassword").show();
+            } else {
+                $("#errPhone").hide();
+                $("#errFirstName").hide();
+                $("#errName").hide();
+                $("#errPassword").hide();
+                $("#errLogin").hide();
+
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Profile/AddUser",
+                    data: {
+                        login: login,
+                        password: password,
+                        phone: phone,
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        positionId: positionId
+                    },
+
+                    success: function (data) {
+
+                        if (data == "true") {
+                            Swal.fire({
+                                title: 'Регистрация нового пользователя',
+                                text: 'зарегистрирован',
+                                icon: 'success',
+                                confirmButtonText: 'Отлично'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = "/Profile/Users";
+                                }
+                            })
+                        }
+                        else {
+                            Swal.fire({
+                                title: 'Регистрация нового пользователя',
+                                text: data,
+                                icon: 'error',
+                                confirmButtonText: 'Ввести заново'
+                            })
+                        }
+                    }
+                })
+            }
+        }
+    </script>
+}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-user"></i> @ViewData["Title"]</h1>
+    </div>
+    <div class="row">
+        <form class="user">
+            <div class="form-group">
+                <label for="FirstName">Фамилия</label>
+                <input type="text" pattern="[0-9]" class="form-control form-control-user" id="FirstName">
+                <span id="errFirstName" style="color:red">Укажите фамилию</span>
+            </div>
+
+            <div class="form-group">
+                <label for="LastName">Имя</label>
+                <input type="text" class="form-control form-control-user" id="LastName">
+                <span id="errName" style="color:red">Укажите имя</span>
+            </div>
+
+            <div class="form-group">
+                <label for="Login">Аккаунт</label>
+                <input type="text" class="form-control form-control-user" id="Login">
+                <span id="errLogin" style="color:red">Укажите аккаунт</span>
+            </div>
+
+            <div class="form-group">
+                <label for="LastName">Пароль</label>
+                <input type="password" class="form-control form-control-user" id="Password">
+                <span id="errPassword" style="color:red">Введите пароль</span>
+            </div>
+
+            <div class="form-group">
+                <label for="Phone">Телефон</label>
+                <input type="text" class="form-control form-control-user" name="Phone"  id="Phone">
+                <span id="errPhone" style="color:red">Введите номер телефона</span>
+            </div>
+
+            <div class="form-group">
+                <label for="Email">Почта</label>
+                <input type="email" class="form-control form-control-user" id="Email">
+            </div>
+
+            <div class="form-group">
+                <label for="positionList">Должность</label>
+                <span id="positions">
+                </span>
+            </div>
+
+            <a  href="#" onclick="UpdateProfile()" class="btn btn-success btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-check"></i>
+                </span>
+                <span class="text">Сохранить</span>
+            </a>
+        </form>
+    </div>
+</div>

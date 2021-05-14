@@ -1,0 +1,15 @@
+﻿@model List<HelpdeskPortal.Models.Question.ViewRequestModel>
+@{
+    Layout = null;
+}
+
+<select onchange="FindSubject(),Find" id="viewRequestList" class="form-control">
+    <option value="0"></option>
+    @if (Model != null)
+    {
+        @foreach (var item in Model)
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    }
+</select>

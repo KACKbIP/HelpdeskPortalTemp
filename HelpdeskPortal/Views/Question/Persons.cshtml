@@ -1,0 +1,30 @@
+﻿@model List<HelpdeskPortal.Models.Question.PersonModel>
+@{
+    Layout = null;
+}
+
+<select id="personList" class="form-control">
+
+    @if (Model != null)
+    {
+        @foreach (var item in Model)
+        {
+            if (ViewBag.ProfileId != null)
+            {
+                if (item.Id == ViewBag.ProfileId)
+                {
+                    <option selected value="@item.Id">@item.Surname @item.Name (@item.Position)</option>
+                }
+                else
+                {
+                    <option value="@item.Id">@item.Surname @item.Name (@item.Position)</option>
+                }
+            }
+            else
+            {
+                <option value="@item.Id">@item.Surname @item.Name (@item.Position)</option>
+            }
+
+        }
+    }
+</select>

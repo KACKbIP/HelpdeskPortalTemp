@@ -1,0 +1,53 @@
+﻿@model List<HelpdeskPortal.Models.Cabinet.WorkingPanelModel>
+@{
+    ViewData["Title"] = "Список заявок";
+}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-list-alt"></i> @ViewData["Title"]</h1>
+    </div>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">@ViewBag.Theme</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Тема</th>
+                            <th>Вид запроса</th>
+                            <th>Клиент</th>
+                            <th>Исполнитель</th>
+                            <th>Дата заявления</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><a href="/Cabinet/Request?requestId=@item.Id">@item.Theme</a> </td>
+                                <td>@item.RequestName</td>
+                                <td>@item.ClientSurname @item.ClientName</td>
+                                <td>@item.Surname @item.Name</td>
+                                <td>@item.RequestDate</td>
+                                @if (item.IsResolved)
+                                {
+                                    <td>Сделано</td>
+                                }
+                                else
+                                {
+                                    <td>В работе</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+</div>

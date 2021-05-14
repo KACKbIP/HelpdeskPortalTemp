@@ -1,0 +1,50 @@
+﻿@model List<HelpdeskPortal.Models.Profile.ProfileModel>
+@{
+    ViewData["Title"] = "Список пользователей";
+}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-list-alt"></i> @ViewData["Title"]</h1>
+    </div>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Аккаунт</th>
+                            <th>Фамилия</th>
+                            <th>Имя</th>
+                            <th>Должность</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a href="/Profile/ChangeUser?profileId=@item.Id" class="btn btn-secondary btn-icon-split">
+                                        <span class="icon text-white-50">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </span>
+                                        <span class="text">@item.Login</span>
+                                    </a>
+                                
+                                </td>
+                                <td>@item.Surname</td>
+                                <td>@item.Name</td>
+                                <td>@item.PositionName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+</div>

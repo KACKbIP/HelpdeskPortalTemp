@@ -1,0 +1,314 @@
+﻿@model List<HelpdeskPortal.Models.Cabinet.WorkingPanelModel>
+@{
+    ViewData["Title"] = "Рабочая панель";
+}
+@section scripts{
+
+    <script>
+
+    </script>
+}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-border-all"></i> @ViewData["Title"]</h1>
+    </div>
+    <div>
+        <h3 class="h5 mb-0 text-gray-800"><i class="fas fa-fw fa-book-open"></i> Открытые заявки</h3>
+        <br />
+        <div class="row">
+            <div>
+                @foreach (var item in Model.GroupBy(m => m.ViewRequestId))
+                {
+                    <h6 class="m-0 font-weight-bold text-gray-800">@item.FirstOrDefault().RequestName</h6>
+                    <br />
+                    <div class="form-group row">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@false" asp-route-viewRequestId="@item.Key" asp-route-profileId="@Convert.ToInt32(User.Claims.ToList()[0].Value)" asp-route-titl="Назначенные мне">Назначенные мне</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key && m.ProfileId == Convert.ToInt32(User.Claims.ToList()[0].Value)).GroupBy(m => m.SubjectId))
+                                {
+                                    if (item2.FirstOrDefault().SubjectId != -1)
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            @item2.FirstOrDefault().SubjectQuestion <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                        <div class="progress mb-4">
+                                            <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key && m.ProfileId == Convert.ToInt32(User.Claims.ToList()[0].Value)).Count())%"
+                                                 aria-valuenow="@(item2.Count()*100/Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key && m.ProfileId == Convert.ToInt32(User.Claims.ToList()[0].Value)).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            Другой вопрос <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                        <div class="progress mb-4">
+                                            <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key && m.ProfileId == Convert.ToInt32(User.Claims.ToList()[0].Value)).Count())%"
+                                                 aria-valuenow="@(item2.Count()*100/Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key && m.ProfileId == Convert.ToInt32(User.Claims.ToList()[0].Value)).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-gray-800"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@false" asp-route-viewRequestId="@item.Key"  asp-route-titl="Сортировка по исполнителям">Сортировка по исполнителям</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key).GroupBy(m => m.ProfileId))
+                                {
+                                    <h4 class="small font-weight-bold">
+                                        @item2.FirstOrDefault().Surname @item2.FirstOrDefault().Name <span class="float-right"> @item2.Count()</span>
+                                    </h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key).Count())%"
+                                             aria-valuenow="@(item2.Count()*100/Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-gray-800"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@false" asp-route-viewRequestId="@item.Key"  asp-route-titl="Сортировка по вопросам">Сортировка по вопросам</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key).GroupBy(m => m.SubjectId))
+                                {
+                                    if (item2.FirstOrDefault().SubjectId != -1)
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            @item2.FirstOrDefault().SubjectQuestion <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                        <div class="progress mb-4">
+                                            <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key).Count())%"
+                                                 aria-valuenow="@(item2.Count()*100/Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            Другой вопрос <span class="float-right">@item2.Count()</span>
+                                        </h4>
+                                        <div class="progress mb-4">
+                                            <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key).Count())%"
+                                                 aria-valuenow="@(item2.Count()*100/Model.Where(m => !m.IsResolved && m.ViewRequestId == item.Key).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+    <div>
+        <h3 class="h5 mb-0 text-gray-800"><i class="fas fa-fw fa-book"></i> Закрытые заявки</h3>
+        <br />
+        <div class="row">
+            <div>
+                @foreach (var item in Model.Where(m=>m.IsResolved).GroupBy(m => m.ViewRequestId))
+                {
+                <h6 class="m-0 font-weight-bold text-gray-800">@item.FirstOrDefault().RequestName - сортировка по исполнителям</h6>
+                    <br />
+                    <div class="form-group row">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@true" asp-route-viewRequestId="@item.Key" asp-route-requestDate="@DateTime.Today.ToString("dd.MM.yyyy")" asp-route-titl="За день исполнители">За день исполнители</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today).GroupBy(m => m.ProfileId))
+                                {
+                                    <h4 class="small font-weight-bold">
+                                        @item2.FirstOrDefault().Surname @item2.FirstOrDefault().Name <span class="float-right"> @item2.Count()</span>
+                                    </h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate>DateTime.Today).Count())%"
+                                             aria-valuenow="@(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate>DateTime.Today).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@true" asp-route-viewRequestId="@item.Key" asp-route-requestDate="@DateTime.Today.AddDays(-7).ToString("dd.MM.yyyy")"asp-route-titl="За неделю исполнители">За неделю исполнители</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-7)).GroupBy(m => m.ProfileId))
+                                {
+                                    <h4 class="small font-weight-bold">
+                                        @item2.FirstOrDefault().Surname @item2.FirstOrDefault().Name <span class="float-right"> @item2.Count()</span>
+                                    </h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-7)).Count())%"
+                                             aria-valuenow="@(item2.Count()*100/Model.Where(m =>m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-7)).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@true" asp-route-viewRequestId="@item.Key" asp-route-requestDate="@DateTime.Today.AddDays(-30).ToString("dd.MM.yyyy")"asp-route-titl="За месяц исполнители">За месяц исполнители</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-30)).GroupBy(m => m.ProfileId))
+                                {
+                                    <h4 class="small font-weight-bold">
+                                        @item2.FirstOrDefault().Surname @item2.FirstOrDefault().Name <span class="float-right"> @item2.Count()</span>
+                                    </h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-30)).Count())%"
+                                             aria-valuenow="@(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-30)).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@true" asp-route-viewRequestId="@item.Key" asp-route-requestDate="@DateTime.Today.AddDays(-365).ToString("dd.MM.yyyy")"asp-route-titl="За год исполнители">За год исполнители</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-365)).GroupBy(m => m.ProfileId))
+                                {
+                                    <h4 class="small font-weight-bold">
+                                        @item2.FirstOrDefault().Surname @item2.FirstOrDefault().Name <span class="float-right"> @item2.Count()</span>
+                                    </h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-365)).Count())%"
+                                             aria-valuenow="@(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-365)).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div>
+                @foreach (var item in Model.Where(m => m.IsResolved).GroupBy(m => m.ViewRequestId))
+                {
+                    <h6 class="m-0 font-weight-bold text-gray-800">@item.FirstOrDefault().RequestName - сортировка по вопросам</h6>
+                    <br />
+                    <div class="form-group row">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@true" asp-route-viewRequestId="@item.Key" asp-route-requestDate="@DateTime.Today" asp-route-titl="За день вопросы">За день вопросы</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today).GroupBy(m => m.SubjectId))
+                                {
+                                    if (item2.FirstOrDefault().SubjectId != -1)
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            @item2.FirstOrDefault().SubjectQuestion <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                    }
+                                    else
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            Другой вопрос <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                    }
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate>DateTime.Today).Count())%"
+                                             aria-valuenow="@(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate>DateTime.Today).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@true" asp-route-viewRequestId="@item.Key" asp-route-requestDate="@DateTime.Today.AddDays(-7)" asp-route-titl="За неделю вопросы">За неделю вопросы</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-7)).GroupBy(m => m.SubjectId))
+                                {
+                                    if (item2.FirstOrDefault().SubjectId != -1)
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            @item2.FirstOrDefault().SubjectQuestion <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                    }
+                                    else
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            Другой вопрос <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                    }
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-7)).Count())%"
+                                             aria-valuenow="@(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-7)).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@true" asp-route-viewRequestId="@item.Key" asp-route-requestDate="@DateTime.Today.AddDays(-30)" asp-route-titl="За месяц вопросы">За месяц вопросы</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-30)).GroupBy(m => m.SubjectId))
+                                {
+                                    if (item2.FirstOrDefault().SubjectId != -1)
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            @item2.FirstOrDefault().SubjectQuestion <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                    }
+                                    else
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            Другой вопрос <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                    }
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar" role="progressbar" style="width: @(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-30)).Count())%"
+                                             aria-valuenow="@(item2.Count()*100/Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-30)).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary"><a asp-controller="Cabinet" asp-action="Requests" asp-route-isResolved="@true" asp-route-viewRequestId="@item.Key" asp-route-requestDate="@DateTime.Today.AddDays(-365)" asp-route-titl="За год вопросы">За год вопросы</a></h6>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var item2 in Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-365)).GroupBy(m => m.SubjectId))
+                                {
+                                    if (item2.FirstOrDefault().SubjectId != -1)
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            @item2.FirstOrDefault().SubjectQuestion <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                    }
+                                    else
+                                    {
+                                        <h4 class="small font-weight-bold">
+                                            Другой вопрос <span class="float-right"> @item2.Count()</span>
+                                        </h4>
+                                    }
+                                        <div class="progress mb-4">
+                                            <div class="progress-bar" role="progressbar" style="width: @(item2.Count() * 100 / Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-365)).Count())%"
+                                                 aria-valuenow="@(item2.Count() * 100 / Model.Where(m => m.IsResolved && m.ViewRequestId == item.Key && m.RequestDate > DateTime.Today.AddDays(-365)).Count())" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                   
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+

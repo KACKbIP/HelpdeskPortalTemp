@@ -1,0 +1,228 @@
+﻿@using HelpdeskPortal.Models.Question;
+@{
+    ViewData["Title"] = "Заявление";
+}
+@section scripts
+{
+    <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+    <script src="~/scripts/sweetalert2.all.min.js" type="text/javascript"></script>
+    <script src="~/scripts/jquery.mask.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#persons').load("/Question/Persons?profileId=@ViewBag.ProfileId");
+            $('#viewRequests').load("/Question/ViewRequests");
+            $('#extraSubject').hide();
+            $('#answer').hide();
+            $("#Phone").mask("+7 799 999 99 99");
+            $("#errTheme").hide();
+            $("#errViewRequests").hide();
+            $("#errPhone").hide();
+            $("#errFirstName").hide();
+            $("#errLastName").hide();
+            $("#errSubject").hide();
+            $("#errExtraSubject").hide();
+            
+        });
+        function SetRequest(isResolved) {
+            $("#errTheme").hide();
+            $("#errViewRequests").hide();
+            $("#errPhone").hide();
+            $("#errFirstName").hide();
+            $("#errLastName").hide();
+            $("#errSubject").hide();
+            $("#errExtraSubject").hide();
+            let theme           = $('#theme').val();
+            let vrId            = $('#viewRequestList').val();
+            let phone           = $('#Phone').val();
+            let firstName       = $('#FirstName').val();
+            let lastName        = $('#LastName').val();
+            let subject         = $('#subjectList').val();
+            let extraSubject    = $('#extraSubject').val();
+            let email = $('#Email').val();
+            let person = $('#personList').val();
+            let description = $('#Description').val();
+            if (theme == "") {
+                $("#errTheme").show();
+            }
+            else if (vrId == 0) {
+
+                $("#errViewRequests").show();
+            }
+            else if (phone == "") {
+                $("#errPhone").show();
+            }
+            else if (firstName == "") {
+                $("#errFirstName").show();
+            }
+            else if (lastName == "") {
+                $("#errLastName").show();
+            }
+            else if (subject == 0) {
+                $("#errSubject").show();
+            }
+            else if (subject == -1 && extraSubject == "") {
+                $("#errExtraSubject").show();
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Question/SetRequest",
+                    data: {
+                        theme         :theme       ,
+                        vrId          :vrId        ,
+                        phone         :phone       ,
+                        firstName     :firstName   ,
+                        lastName      :lastName    ,
+                        subject       :subject     ,
+                        extraSubject  :extraSubject,
+                        email: email,
+                        isResolved: isResolved,
+                        personId: person,
+                        description: description
+                    },
+
+                    success: function (data) {
+                        
+                        
+                        Swal.fire({
+                            title: 'Заявление создано',
+                            text: 'под номером №' + data.id,
+                            icon: 'success',
+                            confirmButtonText: 'Отлично'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        })
+                    }
+                })
+            }
+ViewBagiewBag        }
+        function FindAnswer() {
+            
+            let subjectId = $('#subjectList').val();
+            if (subjectId != 0 && subjectId != -1) {
+                $('#extraSubject').hide();
+                $('#answer').show();
+                $.ajax({
+                    type: "POST",
+                    url: "/Question/FindAnswer",
+                    data: {
+                        subjectId: subjectId
+                    },
+
+                    success: function (data) {
+                        $("#answer").val(data);
+                    }
+                })
+            }
+            else if (subjectId == -1)
+            {
+                $('#extraSubject').show();
+                $('#answer').hide();
+            }
+            else {
+                $('#extraSubject').hide();
+                $('#answer').hide();
+            }
+        }
+        function FindSubject() {
+            let vrId = $('#viewRequestList').val();
+            if (vrId != 0) {
+                $('#subject').show();
+                $('#subject').load("/Question/Subjects?viewRequestId=" + vrId);
+            }
+            else {
+                $('#extraSubject').hide();
+                $('#subject').hide();
+                $('#answer').hide();
+            }
+        }
+        function FindClient() {
+            let phone = $('#Phone').val();
+            $.ajax({
+                type: "POST",
+                url: "/Question/GetClient",
+                data: {
+                    phone: phone
+                },
+
+                success: function (data) {
+                    $("#FirstName").val(data.surname);
+                    $("#LastName").val(data.name);
+                    $("#Email").val(data.email);
+                }
+            })
+        }
+    </script>
+}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-comment  "></i> @ViewData["Title"]</h1>        
+    </div>
+    <div class="row">
+        <form class="user">
+            <div class="form-group">
+                <label for="theme">Тема запроса</label>
+                <input type="text" class="form-control form-control-user" id="theme">
+                <span id="errTheme" style="color:red">Заполните тему запроса</span>
+            </div>
+            <div class="form-group">
+                <label for="viewRequestList">Вид обращения</label>
+                <span id="viewRequests">
+                </span>
+                <span id="errViewRequests" style="color:red">Выберите вид обращения</span>
+            </div>
+            <label>Клиент</label>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-user" onchange="FindClient()" name="Phone" id="Phone" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" placeholder="Номер телефона">
+                <span id="errPhone" style="color:red">Введите номер телефона</span>
+            </div>
+            <div class="form-group row">
+
+                <div class="col-sm-6 mb-3 mb-sm-0">
+                    <input type="text" class="form-control form-control-user" id="FirstName" placeholder="Фамилия">
+                    <span id="errFirstName" style="color:red">Введите фамилию клиента</span>
+                </div>
+
+                <div class="col-sm-6">
+                    <input type="text" class="form-control form-control-user" id="LastName" placeholder="Имя">
+                    <span id="errLastName" style="color:red">Введите имя клиента</span>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-control form-control-user" id="Email" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <span id="subject">
+                </span>
+                <span id="errSubject" style="color:red">Выберите вопрос</span>
+            </div>
+            <div class="form-group">
+                <textarea type="text" class="form-control form-control-user" id="extraSubject" placeholder="Свой вопрос"></textarea>
+                <span id="errExtraSubject" style="color:red">Введите свой вопрос</span>
+            </div>
+            <div class="form-group">
+                <textarea class="form-control form-control-user" id="answer" placeholder="Ответ"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="personList">Исполнитель (назначить или изменить)</label>
+                <span id="persons">
+                </span>
+            </div>
+            <div class="form-group">
+                <textarea type="text" class="form-control" id="Description" placeholder="Описание:"></textarea>
+            </div>
+            <a  href="#" onclick="SetRequest(false)" class="btn btn-success btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-check"></i>
+                </span>
+                <span class="text">Зарегистрировать</span>
+            </a>
+        </form>
+
+    </div>
+</div >
